@@ -1,25 +1,68 @@
-from sgp4.api import Satrec
-from sgp4.api import jday
-from datetime import datetime
-from tracker import *
+import tracker
 
-sat = load_satellite("ISS (ZARYA)")
+# Load Sattelites
 
-iss = Satrec.twoline2rv(sat["line1"], sat["line2"])
+ISS = tracker.load_satellite("ISS (ZARYA)")
 
-now = datetime.utcnow()
+HUBBLE = tracker.load_satellite("HUBBLE SPACE TELESCOPE")
 
-jd, fr = jday(
-    now.year,
-    now.month,
-    now.day,
-    now.hour,
-    now.minute,
-    now.second
-)
+iss_line1 = ISS["line1"]
+iss_line2 = ISS["line2"]
 
-e, r, v = iss.sgp4(jd, fr)
+hubble_line1 = HUBBLE["line1"]
+hubble_line2 = HUBBLE["line2"]
 
-print("Error: ", e)
-print("Position: ", r)
-print("Velocity: ", v)
+# Propagate Satellites
+
+e1, r1, v1 = tracker.propagate_satellite(iss_line1, iss_line2)
+e2, r2, v2 = tracker.propagate_satellite(hubble_line1, hubble_line2)
+
+print("Postion of the ISS Satellite: ", r1)
+print("Position of the HUBBLE Satellite: ", r2)
+
+print("Velocity of the ISS Satellite: ", v1)
+print("Velocity of the HUBBLE Satellite: ", v2)
+
+# Relative Position
+
+rel_position = tracker.relative_position(r1, r2)
+print("Relative Position between ISS and HUBBLE: ", rel_position)
+
+# Relative Velocity
+
+rel_velocity = tracker.relative_velocity(v1, v2)
+print("Relative Velocity between ISS and HUBBLE: ", rel_velocity)
+
+# Relative Speed
+
+rel_speed = tracker.relative_speed(v1, v2)
+print("Relative Speed between ISS and HUBBLE: ", rel_speed)
+
+# Distance
+
+distance = tracker.find_distance(r1, r2)
+print("Distance between ISS and HUBBLE: ", distance)
+
+# Future Propagation
+
+iss_fut_propagation = tracker.future_propagation(iss_line1, iss_line2, 10)
+print("Future Propagation of the ISS: ", len(iss_fut_propagation))
+
+hubble_fut_propagation = tracker.future_propagation(hubble_line1, hubble_line2, 10)
+print("Future Propagation of the HUBBLE: ", len(hubble_fut_propagation))
+
+# Minimum Distance or Time of Closest Approach
+
+min_dist, tca = tracker.closest_approach(iss_fut_propagation, hubble_fut_propagation)
+print("Minimum Distance between ISS and HUBBLE: ", min_dist)
+print("Time of Closest Approach between ISS and HUBBLE: ", tca)
+
+# Dot Product
+
+dot_prod = tracker.dot_product(rel_position, rel_velocity)
+print("Dot Product between ISS and HUBBLE: ", dot_prod)
+
+if dot_prod < 0:
+    print("⚠️ Approaching!")
+else:
+    print("✅ Separating")
