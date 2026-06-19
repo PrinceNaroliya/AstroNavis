@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 import math
 import numpy as np
 
+# Load Satellites Data TLE.
+
 def load_satellite(name):
 
     try:
@@ -27,6 +29,8 @@ def load_satellite(name):
     except FileNotFoundError:
         print("TLE file not found")
 
+# Propagate Satellites: It gives Error, Position, Velocity Values.
+
 def propagate_satellite(line1, line2):
 
     now = datetime.utcnow()
@@ -46,47 +50,7 @@ def propagate_satellite(line1, line2):
 
     return error, position, velocity
 
-def find_distance(position1, position2):
-
-    x1, y1, z1 = position1
-    x2, y2, z2 = position2
-
-    distance = math.sqrt(
-        (x2-x1)**2 + (y2-y1)**2 + (z2-z1)**2
-    )
-
-    return distance
-
-def relative_position(position1, position2):
-
-    x1, y1, z1 = position1
-    x2, y2, z2 = position2
-
-    return (
-        x2 - x1,
-        y2 - y1,
-        z2 - z1
-    )
-
-def relative_velocity(velocity1, velocity2):
-
-    x1, y1, z1 = velocity1
-    x2, y2, z2 = velocity2
-
-    return (
-        x2 - x1,
-        y2 - y1,
-        z2 - z1
-    )
-
-def relative_speed(velocity1, velocity2):
-
-    x1, y1, z1 = velocity1
-    x2, y2, z2 = velocity2
-
-    return math.sqrt(
-        (x2-x1)**2 + (y2-y1)**2 + (z2-z1)**2
-    )
+# Future Propagation: It find the Future Propagation of Satellites on the given Interval.
 
 def future_propagation(line1, line2, interval):
 
@@ -121,26 +85,3 @@ def future_propagation(line1, line2, interval):
         )
 
     return results
-
-def closest_approach(traj1, traj2):
-
-    minimum_distance = float("inf")
-
-    closest_time = None
-
-    for point1, point2 in zip(traj1, traj2):
-        distance = find_distance(point1["position"], point2["position"])
-
-        if distance < minimum_distance:
-
-            minimum_distance = distance
-
-            closest_time = point1["time"]
-
-    return minimum_distance, closest_time
-
-def dot_product(rel_pos, rel_vel):
-
-    dot = np.dot(rel_pos, rel_vel)
-
-    return dot

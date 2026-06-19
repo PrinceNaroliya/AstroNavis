@@ -1,4 +1,5 @@
 import tracker
+import conjunction
 
 # Load Sattelites
 
@@ -25,22 +26,22 @@ print("Velocity of the HUBBLE Satellite: ", v2)
 
 # Relative Position
 
-rel_position = tracker.relative_position(r1, r2)
+rel_position = conjunction.relative_position(r1, r2)
 print("Relative Position between ISS and HUBBLE: ", rel_position)
 
 # Relative Velocity
 
-rel_velocity = tracker.relative_velocity(v1, v2)
+rel_velocity = conjunction.relative_velocity(v1, v2)
 print("Relative Velocity between ISS and HUBBLE: ", rel_velocity)
 
 # Relative Speed
 
-rel_speed = tracker.relative_speed(v1, v2)
+rel_speed = conjunction.relative_speed(v1, v2)
 print("Relative Speed between ISS and HUBBLE: ", rel_speed)
 
 # Distance
 
-distance = tracker.find_distance(r1, r2)
+distance = conjunction.find_distance(r1, r2)
 print("Distance between ISS and HUBBLE: ", distance)
 
 # Future Propagation
@@ -53,13 +54,13 @@ print("Future Propagation of the HUBBLE: ", len(hubble_fut_propagation))
 
 # Minimum Distance or Time of Closest Approach
 
-min_dist, tca = tracker.closest_approach(iss_fut_propagation, hubble_fut_propagation)
+min_dist, tca = conjunction.closest_approach(iss_fut_propagation, hubble_fut_propagation)
 print("Minimum Distance between ISS and HUBBLE: ", min_dist)
 print("Time of Closest Approach between ISS and HUBBLE: ", tca)
 
 # Dot Product
 
-dot_prod = tracker.dot_product(rel_position, rel_velocity)
+dot_prod = conjunction.dot_product(rel_position, rel_velocity)
 print("Dot Product between ISS and HUBBLE: ", dot_prod)
 
 if dot_prod < 0:
