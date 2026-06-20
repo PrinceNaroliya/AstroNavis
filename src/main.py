@@ -2,6 +2,7 @@ import tracker
 import conjunction
 import maneuver
 import numpy as np
+import math
 
 # Load Sattelites
 
@@ -44,12 +45,12 @@ hubble_fut_propagation = tracker.future_propagation(hubble_line1, hubble_line2, 
 
 # Minimum Distance or Time of Closest Approach
 
-min_dist, tca = conjunction.closest_approach(iss_fut_propagation, hubble_fut_propagation)
+(miss_distance,tca,pos1_tca,pos2_tca,vel1_tca,vel2_tca) = conjunction.closest_approach(iss_fut_propagation, hubble_fut_propagation)
 
 # Dot Product
 
 dot_prod = conjunction.dot_product(rel_position, rel_velocity)
-print("Dot Product between ISS and HUBBLE: ", dot_prod)
+print("Dot Product between two Satellites: ", dot_prod)
 
 if dot_prod < 0:
     print("⚠️ Approaching!")
@@ -257,7 +258,31 @@ report = {
     'current_distance': distance,
     'relative_speed': rel_speed,
     'tca': tca,
-    'miss_distance': min_dist
+    'miss_distance': miss_distance
 }
 
-print(report)
+rr_tca = conjunction.relative_position(
+    pos1_tca,
+    pos2_tca
+)
+
+rv_tca = conjunction.relative_velocity(
+    vel1_tca,
+    vel2_tca
+)
+
+hbr = conjunction.calculate_hbr(ISS, HUBBLE)
+
+# --- TESTING FOSTER PROBABILITY ENGINE ---
+
+# 1. Hamare paas HBR pehle se ready hai (0.073 km)
+print(f"Using HBR: {hbr} km")
+
+# 4. Function call karo (abhi covariance pass nahi kar rahe, toh default 100m uncertainty chalegi)
+p_collision = conjunction.find_probability(rr_tca, rv_tca, hbr)
+
+# 5. Output print karo ekdum clean format mein
+print("---------------------------------------")
+print(f"Calculated Collision Probability: {p_collision}")
+print(f"Scientific Notation: {p_collision:.6e}")
+print("---------------------------------------")
