@@ -21,8 +21,6 @@ The long-term vision is to build a system that functions as a **"Google Maps for
 
 ## 🖼️ System Overview
 
-> 📌 Add a high-level architecture diagram here.
-
 ![System Architecture](docs/images/system_architecture.png)
 
 ---
