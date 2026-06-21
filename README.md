@@ -297,7 +297,3 @@ Founder & Developer of AstroNavis
 Building the next generation of orbital intelligence systems.
 
 ---
-
-## 📜 License
-
-MIT License
