@@ -3,6 +3,7 @@ import conjunction
 import maneuver
 import numpy as np
 import math
+from datetime import datetime
 
 # Load Sattelites
 
@@ -289,9 +290,11 @@ print("---------------------------------------")
 
 satellites = tracker.load_all_satellites()
 
-results = conjunction.find_risky_objects(
+results = conjunction.full_conjunction_analysis(
     ISS,
     satellites
 )
 
-print(results[:10])
+for obj in results:
+
+    print(obj)

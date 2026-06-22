@@ -185,25 +185,124 @@ def find_risky_objects(user_satellite, all_satellites):
 
     results = []
 
-    user_traj = tracker.future_propagation(user_satellite["line1"], user_satellite["line2"], 10)
+    user_traj = tracker.future_propagation(
+        user_satellite["line1"],
+        user_satellite["line2"],
+        10
+    )
 
     for sat in all_satellites:
 
         if sat["name"] == user_satellite["name"]:
-
             continue
-        other_traj = tracker.future_propagation(sat["line1"], sat["line2"], 10)
 
-        miss_distance, tca, *_ = closest_approach(user_traj, other_traj)
+        other_traj = tracker.future_propagation(
+            sat["line1"],
+            sat["line2"],
+            10
+        )
+
+        (
+            miss_distance,
+            tca,
+            pos1_tca,
+            pos2_tca,
+            vel1_tca,
+            vel2_tca
+        ) = closest_approach(
+            user_traj,
+            other_traj
+        )
+
+        rr_tca = relative_position(
+            pos1_tca,
+            pos2_tca
+        )
+
+        rv_tca = relative_velocity(
+            vel1_tca,
+            vel2_tca
+        )
+
+        hbr = calculate_hbr(
+            user_satellite,
+            sat
+        )
 
         results.append({
+
             "name": sat["name"],
+
             "miss_distance": miss_distance,
-            "tca": tca
+
+            "tca": tca,
+
+            "rr_tca": rr_tca,
+
+            "rv_tca": rv_tca,
+
+            "hbr": hbr
+
         })
 
     results.sort(
-        key=lambda x:x["miss_distance"]
+        key=lambda x: x["miss_distance"]
     )
+
+    return results
+
+def get_risk_level(miss_distance, pc):
+
+    if miss_distance < 0.5 or pc > 0.001:
+        return "☠️ CRITICAL"
+
+    elif miss_distance < 1 or pc > 0.0001:
+        return "🔴 HIGH RISK"
+
+    elif miss_distance < 5 or pc > 0.00001:
+        return "🟠 MEDIUM RISK"
+
+    else:
+        return "🟢 SAFE"
+
+def full_conjunction_analysis(user_satellite, all_satellites):
+
+    risky_objects = find_risky_objects(
+        user_satellite,
+        all_satellites
+    )
+
+    results = []
+
+    for obj in risky_objects[:10]:
+
+        pc = find_probability(
+            obj["rr_tca"],
+            obj["rv_tca"],
+            obj["hbr"]
+        )
+
+        risk = get_risk_level(
+            obj["miss_distance"],
+            pc
+        )
+
+        results.append({
+
+            "name": obj["name"],
+
+            "miss_distance":
+                obj["miss_distance"],
+
+            "tca":
+                obj["tca"],
+
+            "probability":
+                pc,
+
+            "risk":
+                risk
+
+        })
 
     return results
