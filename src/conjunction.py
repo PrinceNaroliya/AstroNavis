@@ -274,7 +274,9 @@ def full_conjunction_analysis(user_satellite, all_satellites):
 
     results = []
 
-    for obj in risky_objects[:10]:
+    for obj in risky_objects:
+        if obj["miss_distance"] > 50:
+            break  # Sorted hai, baaki sab aur door
 
         pc = find_probability(
             obj["rr_tca"],
