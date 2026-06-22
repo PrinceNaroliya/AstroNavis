@@ -31,6 +31,27 @@ def load_satellite(name):
     except FileNotFoundError:
         print("TLE file not found")
 
+# It loads all satellites
+
+def load_all_satellites():
+
+    with open("data/tle/satellites.txt", "r") as f:
+        lines = [line.strip() for line in f if line.strip()]
+
+    satellites = []
+
+    for i in range(0, len(lines), 5):
+
+        satellites.append({
+            "name": lines[i],
+            "line1": lines[i+1],
+            "line2": lines[i+2],
+            "length": lines[i+3],
+            "width": lines[i+4]
+        })
+
+    return satellites
+
 # Propagate Satellites: It gives Error, Position, Velocity Values.
 
 def propagate_satellite(line1, line2):

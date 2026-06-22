@@ -1,5 +1,6 @@
 import math
 import numpy as np
+import tracker
 
 # Find Distance: It finds Distance between Two Satellites.
 
@@ -179,3 +180,30 @@ def find_probability(rr_tca, rv_tca, hbr, covariance=None):
     probability = math.exp(exponent) * coefficient
  
     return min(1.0, probability)
+
+def find_risky_objects(user_satellite, all_satellites):
+
+    results = []
+
+    user_traj = tracker.future_propagation(user_satellite["line1"], user_satellite["line2"], 10)
+
+    for sat in all_satellites:
+
+        if sat["name"] == user_satellite["name"]:
+
+            continue
+        other_traj = tracker.future_propagation(sat["line1"], sat["line2"], 10)
+
+        miss_distance, tca, *_ = closest_approach(user_traj, other_traj)
+
+        results.append({
+            "name": sat["name"],
+            "miss_distance": miss_distance,
+            "tca": tca
+        })
+
+    results.sort(
+        key=lambda x:x["miss_distance"]
+    )
+
+    return results

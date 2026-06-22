@@ -286,3 +286,12 @@ print("---------------------------------------")
 print(f"Calculated Collision Probability: {p_collision}")
 print(f"Scientific Notation: {p_collision:.6e}")
 print("---------------------------------------")
+
+satellites = tracker.load_all_satellites()
+
+results = conjunction.find_risky_objects(
+    ISS,
+    satellites
+)
+
+print(results[:10])
