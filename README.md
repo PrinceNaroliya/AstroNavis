@@ -3,6 +3,8 @@
 
 # 🚀 AstroNavis
 
+![Main Logo](docs/images/image2.png)
+
 > An Orbital Intelligence & Conjunction Analysis Platform
 
 [![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)]()
