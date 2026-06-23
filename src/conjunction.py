@@ -275,7 +275,7 @@ def full_conjunction_analysis(user_satellite, all_satellites):
     results = []
 
     for obj in risky_objects:
-        if obj["miss_distance"] > 50:
+        if obj["miss_distance"] > 500:
             break  # Sorted hai, baaki sab aur door
 
         pc = find_probability(
@@ -308,3 +308,4 @@ def full_conjunction_analysis(user_satellite, all_satellites):
         })
 
     return results
+
