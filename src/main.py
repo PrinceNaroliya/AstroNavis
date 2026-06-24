@@ -24,5 +24,5 @@ while True:
     print(results[:10])
     print("-" * 50)
 
-    time.sleep(600)
+    time.sleep(60)
 

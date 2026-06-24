@@ -192,7 +192,7 @@ def find_risky_objects(user_satellite, all_satellites, start_time=None):
     user_traj = tracker.future_propagation(
         user_satellite["line1"],
         user_satellite["line2"],
-        10,
+        1,
         start_time=start_time
     )
 
@@ -204,7 +204,7 @@ def find_risky_objects(user_satellite, all_satellites, start_time=None):
         other_traj = tracker.future_propagation(
             sat["line1"],
             sat["line2"],
-            10,
+            1,
             start_time=start_time
         )
 
@@ -230,10 +230,24 @@ def find_risky_objects(user_satellite, all_satellites, start_time=None):
             vel2_tca
         )
 
+        dot = dot_product(
+            rr_tca,
+            rv_tca
+        )
+
         hbr = calculate_hbr(
             user_satellite,
             sat
         )
+
+        if dot < 0:
+            motion_status = "🔴 APPROACHING"
+
+        elif dot > 0:
+            motion_status = "🟢 SEPARATING"
+
+        else:
+            motion_status = "🟡 CROSSING"
 
         results.append({
 
@@ -246,6 +260,10 @@ def find_risky_objects(user_satellite, all_satellites, start_time=None):
             "rr_tca": rr_tca,
 
             "rv_tca": rv_tca,
+
+            "dot_product": dot,
+
+            "motion_status": motion_status,
 
             "hbr": hbr
 
@@ -312,6 +330,8 @@ def full_conjunction_analysis(user_satellite, all_satellites, current_sim_time=N
             "tca": obj["tca"],
             "time_to_tca": f"{hours}h {minutes}m",
             "probability": pc,
+            "dot_product": obj["dot_product"],
+            "motion": obj["motion_status"],
             "risk": risk
         })
 

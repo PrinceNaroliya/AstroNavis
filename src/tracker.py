@@ -87,8 +87,10 @@ def future_propagation(line1, line2, interval, start_time=None):
 
     results = []
 
+    WINDOW_DAYS = 3
+
     # 1440 minutes = 24 ghante ki window chalegi loop mein
-    for minute in range(0, 1440, interval):
+    for minute in range(0, WINDOW_DAYS * 24 * 60, interval):
         
         future_time = now + timedelta(minutes=minute)
 
