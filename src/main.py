@@ -15,12 +15,14 @@ satellites = tracker.load_all_satellites()
 
 while True:
 
+    print(f"\n🚀 Loop Execute Hone Ka Current UTC Time: {datetime.utcnow()}")
     results = conjunction.full_conjunction_analysis(
         ISS,
         satellites
     )
 
     print(results[:10])
+    print("-" * 50)
 
     time.sleep(600)
 

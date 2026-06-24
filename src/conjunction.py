@@ -1,6 +1,7 @@
 import math
 import numpy as np
 import tracker
+from datetime import datetime
 
 # Find Distance: It finds Distance between Two Satellites.
 
@@ -181,14 +182,18 @@ def find_probability(rr_tca, rv_tca, hbr, covariance=None):
  
     return min(1.0, probability)
 
-def find_risky_objects(user_satellite, all_satellites):
+def find_risky_objects(user_satellite, all_satellites, start_time=None):
 
     results = []
+
+    if start_time is None:
+        start_time = datetime.utcnow()
 
     user_traj = tracker.future_propagation(
         user_satellite["line1"],
         user_satellite["line2"],
-        10
+        10,
+        start_time=start_time
     )
 
     for sat in all_satellites:
@@ -199,7 +204,8 @@ def find_risky_objects(user_satellite, all_satellites):
         other_traj = tracker.future_propagation(
             sat["line1"],
             sat["line2"],
-            10
+            10,
+            start_time=start_time
         )
 
         (
@@ -265,11 +271,15 @@ def get_risk_level(miss_distance, pc):
     else:
         return "🟢 SAFE"
 
-def full_conjunction_analysis(user_satellite, all_satellites):
+def full_conjunction_analysis(user_satellite, all_satellites, current_sim_time=None):
+
+    if current_sim_time is None:
+        current_sim_time = datetime.utcnow()
 
     risky_objects = find_risky_objects(
         user_satellite,
-        all_satellites
+        all_satellites,
+        start_time=current_sim_time
     )
 
     results = []
@@ -278,33 +288,31 @@ def full_conjunction_analysis(user_satellite, all_satellites):
         if obj["miss_distance"] > 500:
             break  # Sorted hai, baaki sab aur door
 
-        pc = find_probability(
-            obj["rr_tca"],
-            obj["rv_tca"],
-            obj["hbr"]
-        )
+        tca_dt = obj["tca"]
+        if tca_dt.tzinfo is not None:
+            tca_dt = tca_dt.replace(tzinfo=None)
 
-        risk = get_risk_level(
-            obj["miss_distance"],
-            pc
-        )
+        time_to_tca = tca_dt - current_sim_time
+        total_seconds = time_to_tca.total_seconds()
+
+        if total_seconds <= 0:
+            # Event past mein nikal chuka hai, active thread matrix se hatao!
+            continue 
+
+        # BUG FIX 2: Safe Positive Time Delta Formatting (No weird modulo behavior)
+        hours = int(total_seconds // 3600)
+        minutes = int((total_seconds % 3600) // 60)
+
+        pc = find_probability(obj["rr_tca"], obj["rv_tca"], obj["hbr"])
+        risk = get_risk_level(obj["miss_distance"], pc)
 
         results.append({
-
             "name": obj["name"],
-
-            "miss_distance":
-                obj["miss_distance"],
-
-            "tca":
-                obj["tca"],
-
-            "probability":
-                pc,
-
-            "risk":
-                risk
-
+            "miss_distance": obj["miss_distance"],
+            "tca": obj["tca"],
+            "time_to_tca": f"{hours}h {minutes}m",
+            "probability": pc,
+            "risk": risk
         })
 
     return results

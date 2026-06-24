@@ -75,14 +75,19 @@ def propagate_satellite(line1, line2):
 
 # Future Propagation: It find the Future Propagation of Satellites on the given Interval.
 
-def future_propagation(line1, line2, interval):
-
+def future_propagation(line1, line2, interval, start_time=None):
     satellite = Satrec.twoline2rv(line1, line2)
 
-    now = datetime.utcnow()
+    # BUG FIX: Agar bahar se start_time (jaise current_sim_time) aaya hai toh wo use karo, 
+    # nahi toh default mein abhi ka utcnow() lo
+    if start_time is None:
+        now = datetime.utcnow()
+    else:
+        now = start_time
 
     results = []
 
+    # 1440 minutes = 24 ghante ki window chalegi loop mein
     for minute in range(0, 1440, interval):
         
         future_time = now + timedelta(minutes=minute)
