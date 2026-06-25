@@ -330,6 +330,7 @@ def full_conjunction_analysis(user_satellite, all_satellites, current_sim_time=N
             "tca": obj["tca"],
             "time_to_tca": f"{hours}h {minutes}m",
             "probability": pc,
+            "rv_tca": obj["rv_tca"],
             "dot_product": obj["dot_product"],
             "motion": obj["motion_status"],
             "risk": risk
